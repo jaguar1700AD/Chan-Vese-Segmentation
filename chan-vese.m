@@ -1,5 +1,4 @@
-%% Read an image from a file
-f = imread('ellipse_blur2.png');
+file = "dog.png";
 
 % Set constants
 neta = 10^(-8);
@@ -7,17 +6,29 @@ mu = 0.2;
 nu = 0;
 lambda1 = 1; lamnda2 = 1;
 dt = 0.5;
-tol = 10^(-3);
+tol = 0.6*10^(-2);
 global epsilon = 1;
 
+%% Read an image from a file
+f = imread(file);
+info = imfinfo(file);
+
+if (length(size(f)) ~= 2)
+  error("Not a grayscale image");
+end
+
 % convert image to double and scale to [0,1]
-f = double(f) / 255;
-[n1,n2] = size(f);
+f = double(f);
+f = f / 2^(info.BitDepth);
+
+[n1,n2] = size(f)
+LargestPixel = norm(reshape(f, n1*n2, 1), inf)
 
 function display_image(f)
   figure(1); clf;
   %pcolor(u); % try this one too
   imagesc(f);
+  %imshow(f);
   caxis([0 1])
   colormap(gray)
   %axis equal, axis tight
@@ -83,7 +94,9 @@ endfunction
 % Initialize phi
 x = 1:n2; y = (1:n1)';
 [xx, yy] = meshgrid(x, y);
-phi = sin(pi * x / 5) .* sin(pi * y / 5);
+phi = sin(pi * 10* x / n2) .* sin(pi * 10* y / n1);
+
+display_image(f);
 
 step = 1;
 while (1)
@@ -118,11 +131,12 @@ while (1)
     contour(x, y, phi_new, [0,0], 'r');
     drawnow
     pause(0.001);
+    if (norm(reshape(phi_new - phi, n1*n2, 1), 2) / sqrt(n1*n2) < tol)
+      printf("Converged\n");
+      break;
+    endif
   endif
 
-  if (norm(reshape(phi_new - phi, n1*n2, 1), 2) / sqrt(n1*n2) < tol)
-    break;
-  endif
   phi = phi_new;
   step += 1;
 
