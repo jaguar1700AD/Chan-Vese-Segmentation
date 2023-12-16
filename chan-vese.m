@@ -1,45 +1,46 @@
 %% Read an image from a file
-u = imread('testpat_blur4.png');
-%u = imread('ellipse_blur2.png');
-%u = imread('eye.png');
+f = imread('testpat_blur4.png');
 
 % convert image to double and scale to [0,1]
-u = double(u) / 255;
+f = double(f) / 255;
+[n1,n2] = size(f);
 
-[n,n2] = size(u);
-if (n ~= n2)
-  error('by default, this only supports square images')
-end
+function display_image(f)
+  figure(1); clf;
+  %pcolor(u); % try this one too
+  imagesc(f);
+  caxis([0 1])
+  colormap(gray)
+  axis equal, axis tight
+endfunction
 
+function result = dirac_delta(A)
+  epsilon = 1;
+  result = epsilon ./ (pi * (epsilon^2 + A.^2));
+endfunction
 
-figure(1); clf;
-%pcolor(u); % try this one too
-imagesc(u);
-caxis([0 1])
-colormap(gray)
-axis equal, axis tight
+%Extend f to outside the image boundary using 0 Neumann Boundary Condition
+function result = extend(f)
+  A = [f(:,1), f, f(:,end)];
+  result = [A(1,:); A; A(end, :)];
+endfunction
 
+function result = row_forward_diff(f)
+  result = [f(2:end,:); f(end,:)] - f;
+endfunction
 
-% "stretch" the matrix representation of the image into one long
-% vector.
-v = reshape(u, n*n, 1);
+function result = row_backward_diff(f)
+  result = f - [f(1,:); f(1:end-1,:)];
+endfunction
 
-% add noise
-v = v + 0.2*(rand(size(v)) - 1/2);
+function result = col_forward_diff(f)
+  result = [f(:, 2:end), f(:, end)] - f;
+endfunction
 
-% convert the long vector back into a matrix
-u2 = reshape(v, n, n);
-
-
-figure(2); clf;
-imagesc(u2);
-caxis([0 1])
-colormap(gray)
-axis equal, axis tight
-
+function result = col_backward_diff(f)
+  result = f - [f(:, 1), f(:, 1:end-1)];
+endfunction
 
 %% Output original and result side-by-side
-% You could look at the resulting file with a web browser or image
-% viewer
-result = [u  u2];
+result = [f, f];
 imwrite(result, 'result.png')
