@@ -1,4 +1,6 @@
-file = "rgb_apple.jpg";
+pkg load image;
+
+file = "apple.jpeg";
 
 % Set constants
 neta = 10^(-8);
@@ -9,29 +11,16 @@ dt = 0.5;
 tol = 0.6*10^(-2);
 global epsilon = 1;
 
-%% Read an image from a file
-f = imread(file);
-info = imfinfo(file);
-
-if (length(size(f)) ~= 3 || size(f)(3) ~= 3)
-  error("Not an RGB image");
-end
-
-% convert image to double and scale to [0,1]
-f = double(f);
-f = f / 2^(info.BitDepth);
-
-[n1,n2, n3] = size(f)
-LargestPixel = norm(reshape(f, n1*n2*n3, 1), inf)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 function display_image(f)
   figure(1); clf;
-  %pcolor(u); % try this one too
+  if (length(size(f)) == 2)
+    colormap(gray);
+  endif
   imagesc(f);
   %imshow(f);
   caxis([0 1])
-  %colormap(gray)
-  %axis equal, axis tight
 endfunction
 
 function result = dirac_delta(A)
@@ -88,6 +77,19 @@ endfunction
 function result = col_central_diff(f)
   result = ([f(:, 2:end,:), f(:, end-1,:)] - [f(:, 2,:), f(:, 1:end-1,:)]) / 2;
 endfunction
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%% Read an image from a file
+f = imread(file);
+info = imfinfo(file);
+
+% convert image to double and scale to [0,1]
+f = double(f);
+f = f / 2^(info.BitDepth);
+
+[n1,n2, n3] = size(f)
+LargestPixel = norm(reshape(f, n1*n2*n3, 1), inf)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
