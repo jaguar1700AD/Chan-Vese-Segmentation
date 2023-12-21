@@ -1,6 +1,6 @@
 pkg load image;
 
-file = "Pics/grayscale/flower.jpg";
+file = "Pics/grayscale/flower/flower.jpg";
 
 % Set constants
 neta = 10^(-8);
