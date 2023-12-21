@@ -1,6 +1,6 @@
 pkg load image;
 
-file = "apple.jpeg";
+file = "Pics/grayscale/flower.jpg";
 
 % Set constants
 neta = 10^(-8);
@@ -146,6 +146,3 @@ while (1)
 endwhile
 
 
-%% Output original and result side-by-side
-result = [f, f];
-imwrite(result, 'result.png')
